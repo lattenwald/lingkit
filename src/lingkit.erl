@@ -17,7 +17,7 @@ convert_bytecode(Binary, "BEAM") -> Binary;
 convert_bytecode(Binary, "LING") ->
     Username = application:get_env(lingkit, username, "test"),
     Password = application:get_env(lingkit, password, "test"),
-    BuildService = application:get_env(lingkit, build_service, "https://build.erlangonxen.org:8080"),
+    BuildService = application:get_env(lingkit, build_service, "http://build.erlangonxen.org:8080"),
     Encoded = base64:encode_to_string(lists:append([Username, ":", Password])),
     AuthHeader = {"Authorization","Basic " ++ Encoded},
 
