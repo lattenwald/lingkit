@@ -29,6 +29,6 @@ convert_bytecode(Binary, "LING") ->
         {ok, {_, _, Response}} -> Response;
         E -> {error, {convert_bytecode, E}}
     end;
-convert_bytecode(Binary, _) -> Binary; % wow!
+convert_bytecode(Binary, _) -> Binary. % wow!
 
 test_forms() -> [{attribute,1,module,userboot},{attribute,2,compile,[export_all]},{function,4,start,0,[{clause,4,[],[],[{call,5,{remote,5,{atom,5,erlang},{atom,5,display}},[{atom,5,hello}]}]}]}].
