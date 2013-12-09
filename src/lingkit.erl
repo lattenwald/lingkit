@@ -12,10 +12,19 @@ compile_forms(Forms, Opts) ->
     end.
 
 convert_bytecode(Binary) ->
-    R = {ok, {_, _, Response}} = httpc:request(post,
-        {"https://build.erlangonxen.org:8080/1/transform",
-            [], "application/octet-stream", Binary}, [], [{sync, true}, {body_format, binary}]),
-    io:format("~p~n", R),
-    Response.
+    Username = application:get_env(lingkit, username, "test"),
+    Password = application:get_env(lingkit, password, "test"),
+    BuildService = application:get_env(lingkit, build_service, "https://build.erlangonxen.org:8080"),
+    Encoded = base64:encode_to_string(lists:append([Username, ":", Password])),
+    AuthHeader = {"Authorization","Basic " ++ Encoded},
+
+    case httpc:request(
+            post,
+            {BuildService ++ "/1/transform", [AuthHeader], "application/octet-stream", Binary},
+            [],
+            [{sync, true}, {body_format, binary}]) of
+        {ok, {_, _, Response}} -> Response;
+        E -> {error, {convert_bytecode, E}}
+    end.
 
 test_forms() -> [{attribute,1,module,userboot},{attribute,2,compile,[export_all]},{function,4,start,0,[{clause,4,[],[],[{call,5,{remote,5,{atom,5,erlang},{atom,5,display}},[{atom,5,hello}]}]}]}].
