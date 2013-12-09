@@ -1,5 +1,5 @@
 -module(lingkit).
--export([compile_forms/1, compile_forms/2, convert_bytecode/1, test_forms/0]).
+-export([compile_forms/1, compile_forms/2, convert_bytecode/1, convert_bytecode/2, test_forms/0]).
 
 compile_forms(Forms) ->
     compile_forms(Forms, [verbose, report_errors, report_warnings]).
@@ -11,7 +11,10 @@ compile_forms(Forms, Opts) ->
         Error -> Error
     end.
 
-convert_bytecode(Binary) ->
+convert_bytecode(Binary) -> convert_bytecode(Binary, erlang:system_info(machine)).
+
+convert_bytecode(Binary, "BEAM") -> Binary;
+convert_bytecode(Binary, "LING") ->
     Username = application:get_env(lingkit, username, "test"),
     Password = application:get_env(lingkit, password, "test"),
     BuildService = application:get_env(lingkit, build_service, "https://build.erlangonxen.org:8080"),
@@ -25,6 +28,7 @@ convert_bytecode(Binary) ->
             [{sync, true}, {body_format, binary}]) of
         {ok, {_, _, Response}} -> Response;
         E -> {error, {convert_bytecode, E}}
-    end.
+    end;
+convert_bytecode(Binary, _) -> Binary; % wow!
 
 test_forms() -> [{attribute,1,module,userboot},{attribute,2,compile,[export_all]},{function,4,start,0,[{clause,4,[],[],[{call,5,{remote,5,{atom,5,erlang},{atom,5,display}},[{atom,5,hello}]}]}]}].
