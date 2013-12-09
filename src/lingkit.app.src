@@ -1,0 +1,14 @@
+{application, lingkit,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  ssl,
+                  inets
+                 ]},
+  {mod, { lingkit_app, []}},
+  {env, []}
+ ]}.
