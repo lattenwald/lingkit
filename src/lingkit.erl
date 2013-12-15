@@ -25,7 +25,7 @@ convert_bytecode(Binary, "LING") ->
             post,
             {BuildService ++ "/1/transform", [AuthHeader], "application/octet-stream", Binary},
             [],
-            [{sync, true}, {body_format, binary}]) of
+            [{sync, true}, {body_format, binary}, {socket_opts, [{recbuf, 32768}]}]) of
         {ok, {_, _, Response}} -> Response;
         E -> {error, {convert_bytecode, E}}
     end;
