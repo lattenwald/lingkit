@@ -17,14 +17,14 @@ convert_bytecode(Binary, "BEAM") -> Binary;
 convert_bytecode(Binary, "LING") ->
     Username = application:get_env(lingkit, username, "test"),
     Password = application:get_env(lingkit, password, "test"),
-    BuildService = application:get_env(lingkit, build_service, "http://build.erlangonxen.org:8080"),
+    BuildService = application:get_env(lingkit, build_service, "http://build.erlangonxen.org:8088"),
     Encoded = base64:encode_to_string(lists:append([Username, ":", Password])),
     AuthHeader = {"Authorization","Basic " ++ Encoded},
 
     case httpc:request(
             post,
             {BuildService ++ "/1/transform", [AuthHeader], "application/octet-stream", Binary},
-            [],
+            [{ssl, [{verify, verify_none}]}],
             [{sync, true}, {body_format, binary}, {socket_opts, [{recbuf, 32768}]}]) of
         {ok, {_, _, Response}} -> Response;
         E -> {error, {convert_bytecode, E}}
