@@ -6,8 +6,12 @@ compile_forms(Forms) ->
 
 compile_forms(Forms, Opts) ->
     case compile:forms(Forms, Opts) of
-        {ok, Module, Binary} -> {ok, Module, convert_bytecode(Binary)};
-        {ok, Module, Binary, W} -> {ok, Module, convert_bytecode(Binary), W};
+        Tuple when is_tuple(Tuple) andalso element(1, Tuple) =:= ok ->
+            Binary = element(3, Tuple),
+            case convert_bytecode(Binary) of
+                B when is_binary(B) -> setelement(3, Tuple, B);
+                E -> E
+            end;
         Error -> Error
     end.
 
